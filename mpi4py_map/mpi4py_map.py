@@ -40,11 +40,10 @@ def map(function, sequence, *args, **kwargs):
 
     if rank == 0:
         # Controller
-        result = _mpi_controller(sequence, *args, **kwargs)
-        return result
+        return _mpi_controller(sequence, *args, **kwargs)
     else:
         # Worker
-        _mpi_worker(function, sequence, *args, **kwargs)
+        return _mpi_worker(function, sequence, *args, **kwargs)
 
 def _mpi_controller(sequence, *args, **kwargs):
     """Controller function that sends each element in sequence to
@@ -181,7 +180,7 @@ def _mpi_worker(function, sequence, *args, **kwargs):
             # Kill signal received
             if debug: print "Worker %i on %s: recieved kill signal" % (rank, proc_name)
             MPI.COMM_WORLD.send([], dest=0, tag=2)
-            sys.exit(0)
+            return []
 
         if status.tag == 10:
             # Call function on received element
